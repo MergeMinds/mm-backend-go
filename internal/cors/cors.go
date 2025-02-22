@@ -1,7 +1,7 @@
 package cors
 
 import (
-	"github.com/InTeam-Russia/go-backend-template/internal/config"
+	"github.com/MergeMinds/mm-backend-go/internal/config"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )

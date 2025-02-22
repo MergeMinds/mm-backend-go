@@ -1,4 +1,4 @@
-# Добро пожаловать! Это шаблон для бекенда на Go от InTeam Russia
+# MergeMinds | Go backend
 
 ## Как это запускать?
 

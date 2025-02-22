@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/InTeam-Russia/go-backend-template/internal/auth/password"
+	"github.com/MergeMinds/mm-backend-go/internal/auth/password"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"

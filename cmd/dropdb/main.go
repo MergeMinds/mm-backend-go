@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/InTeam-Russia/go-backend-template/internal/applogger"
-	"github.com/InTeam-Russia/go-backend-template/internal/config"
-	"github.com/InTeam-Russia/go-backend-template/internal/db"
+	"github.com/MergeMinds/mm-backend-go/internal/applogger"
+	"github.com/MergeMinds/mm-backend-go/internal/config"
+	"github.com/MergeMinds/mm-backend-go/internal/db"
 )
 
 func main() {

@@ -3,10 +3,10 @@ package auth
 import (
 	"net/http"
 
-	"github.com/InTeam-Russia/go-backend-template/internal/apierr"
-	"github.com/InTeam-Russia/go-backend-template/internal/auth/password"
-	"github.com/InTeam-Russia/go-backend-template/internal/auth/session"
-	"github.com/InTeam-Russia/go-backend-template/internal/auth/user"
+	"github.com/MergeMinds/mm-backend-go/internal/apierr"
+	"github.com/MergeMinds/mm-backend-go/internal/auth/password"
+	"github.com/MergeMinds/mm-backend-go/internal/auth/session"
+	"github.com/MergeMinds/mm-backend-go/internal/auth/user"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.uber.org/zap"

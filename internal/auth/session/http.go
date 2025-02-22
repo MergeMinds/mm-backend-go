@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/InTeam-Russia/go-backend-template/internal/apierr"
+	"github.com/MergeMinds/mm-backend-go/internal/apierr"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.uber.org/zap"

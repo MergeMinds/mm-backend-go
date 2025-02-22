@@ -1,4 +1,4 @@
-module github.com/InTeam-Russia/go-backend-template
+module github.com/MergeMinds/mm-backend-go
 
 go 1.23.1
 

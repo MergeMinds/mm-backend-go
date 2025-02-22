@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/InTeam-Russia/go-backend-template/internal/applogger"
-	"github.com/InTeam-Russia/go-backend-template/internal/auth/user"
-	"github.com/InTeam-Russia/go-backend-template/internal/config"
-	"github.com/InTeam-Russia/go-backend-template/internal/db"
+	"github.com/MergeMinds/mm-backend-go/internal/applogger"
+	"github.com/MergeMinds/mm-backend-go/internal/auth/user"
+	"github.com/MergeMinds/mm-backend-go/internal/config"
+	"github.com/MergeMinds/mm-backend-go/internal/db"
 )
 
 func main() {
@@ -16,6 +17,8 @@ func main() {
 	}
 
 	logger := applogger.Create(config.LogLevel)
+
+	fmt.Println("Hello, World!")
 
 	pgPool, err := db.InitDb(config.PostgresUrl, os.Getenv("SQL_FILE"), logger)
 	if err != nil {
