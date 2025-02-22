@@ -46,7 +46,7 @@ nvim .env
 #### Третий шаг - инициализируем БД
 
 ```
-go run cmd/initdb/main.go
+SQL_FILE=./db/CreateTables.sql go run cmd/initdb/main.go
 ```
 
 #### Четвёртый шаг - запускаем проект
@@ -78,7 +78,7 @@ DB_USER=<название_БД> DB_NAME=<имя_пользователя> docker
 ```
 
 ```sh
-go run cmd/dropdb/main.go
+SQL_FILE=./db/DropTables.sql go run cmd/dropdb/main.go
 ```
 
 ## Всё!
