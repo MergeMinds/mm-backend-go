@@ -1,9 +1,13 @@
 package user
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Model struct {
-	Id           int64
+	Id           uuid.UUID
 	CreatedAt    time.Time
 	FirstName    string
 	LastName     string
@@ -15,7 +19,7 @@ type Model struct {
 }
 
 type OutModel struct {
-	Id        int64     `json:"id"`
+	Id        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"createdAt"`
 	FirstName string    `json:"firstName"`
 	LastName  string    `json:"lastName"`
