@@ -16,10 +16,14 @@ services:
     depends_on:
       - db
       - dragonfly
+    env_file:
+      - .env
 
   initdb:
     build: .
-    command: ["/app/initdb"]
+    command: >
+      sh -c "apk add --no-cache postgresql-contrib &&
+           /app/initdb"
     environment:
       - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}
       - REDIS_URL=redis://dragonfly/0
@@ -32,6 +36,8 @@ services:
       - SQL_FILE=/app/db/CreateTables.sql
     depends_on:
       - backend
+    env_file:
+      - .env
 
   dropdb:
     build: .
@@ -48,7 +54,9 @@ services:
       - SQL_FILE=/app/db/DropTables.sql
     depends_on:
       - backend
-
+    env_file:
+      - .env
+  
   db:
     image: postgres:17.1-alpine
     environment:
@@ -61,6 +69,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    env_file:
+      - .env
 
   dragonfly:
     image: docker.dragonflydb.io/dragonflydb/dragonfly
@@ -72,3 +82,5 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    env_file:
+      - .env

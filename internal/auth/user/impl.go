@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/MergeMinds/mm-backend-go/internal/auth/password"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
@@ -70,7 +71,7 @@ const getByIdSql = `
 	WHERE id = $1
 `
 
-func (r *PGRepo) GetById(id int64) (*Model, error) {
+func (r *PGRepo) GetById(id uuid.UUID) (*Model, error) {
 	r.logger.Debug("Executing query", zap.String("query", getByIdSql))
 
 	var user Model
@@ -136,7 +137,7 @@ const deleteByIdSql = `
 	WHERE id = $1
 `
 
-func (r *PGRepo) DeleteById(id int64) error {
+func (r *PGRepo) DeleteById(id uuid.UUID) error {
 	r.logger.Debug("Executing query", zap.String("query", deleteByIdSql))
 	_, err := r.db.Exec(context.Background(), deleteByIdSql, id)
 	return err

@@ -22,7 +22,7 @@ func NewRedisRepo(redisClient *redis.Client, logger *zap.Logger) Repo {
 	return &RedisRepo{redisClient, logger}
 }
 
-func (r *RedisRepo) Create(userId int64, sessionLifetime Seconds) (*Model, error) {
+func (r *RedisRepo) Create(userId uuid.UUID, sessionLifetime Seconds) (*Model, error) {
 	expiration := time.Second * time.Duration(sessionLifetime)
 
 	session := Model{
@@ -46,7 +46,7 @@ func (r *RedisRepo) Create(userId int64, sessionLifetime Seconds) (*Model, error
 	r.logger.Debug(
 		"Session created",
 		zap.String("session_id", session.Id.String()),
-		zap.Int64("user_id", userId),
+		zap.String("user_id", userId.String()),
 	)
 
 	return &session, nil
