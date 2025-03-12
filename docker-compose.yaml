@@ -5,7 +5,7 @@ services:
     ports:
       - "${PORT:-8080}:8080"
     environment:
-      - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}
+      - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}?sslmode=disable
       - REDIS_URL=redis://dragonfly/0
       - SESSION_COOKIE_SECURE=false
       - SESSION_COOKIE_DOMAIN=${SESSION_COOKIE_DOMAIN:-localhost:5173}
@@ -25,7 +25,7 @@ services:
       sh -c "apk add --no-cache postgresql-contrib &&
            /app/initdb"
     environment:
-      - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}
+      - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}?sslmode=disable
       - REDIS_URL=redis://dragonfly/0
       - SESSION_COOKIE_SECURE=false
       - SESSION_COOKIE_DOMAIN=${SESSION_COOKIE_DOMAIN:-localhost:5173}
@@ -43,7 +43,7 @@ services:
     build: .
     command: ["/app/dropdb"]
     environment:
-      - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}
+      - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}?sslmode=disable
       - REDIS_URL=redis://dragonfly/0
       - SESSION_COOKIE_SECURE=false
       - SESSION_COOKIE_DOMAIN=${SESSION_COOKIE_DOMAIN:-localhost:5173}

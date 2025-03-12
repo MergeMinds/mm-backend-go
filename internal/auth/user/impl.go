@@ -2,28 +2,27 @@ package user
 
 import (
 	"context"
-	"errors"
+	"database/sql"
 	"time"
 
 	"github.com/MergeMinds/mm-backend-go/internal/auth/password"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
 
 type PGRepo struct {
-	db     *pgxpool.Pool
+	db     *sqlx.DB
 	logger *zap.Logger
 }
 
-func NewPGRepo(db *pgxpool.Pool, logger *zap.Logger) Repo {
+func NewPGRepo(db *sqlx.DB, logger *zap.Logger) Repo {
 	return &PGRepo{db, logger}
 }
 
 const createUserSql = `
 	INSERT INTO users (first_name, last_name, username, email, role, password_hash, password_salt, created_at)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	VALUES (:first_name, :last_name, :username, :email, :role, :password_hash, :password_salt, :created_at)
 	RETURNING id, created_at
 `
 
@@ -36,30 +35,27 @@ func (r *PGRepo) Create(user *CreateModel) (*Model, error) {
 	passwordHash := password.Hash(user.Password, passwordSalt)
 	r.logger.Debug("Executing query", zap.String("query", createUserSql))
 
-	var newUser Model
-	newUser.FirstName = user.FirstName
-	newUser.LastName = user.LastName
-	newUser.Username = user.Username
-	newUser.Email = user.Email
-	newUser.Role = user.Role
-	newUser.PasswordHash = passwordHash
-	newUser.PasswordSalt = passwordSalt
+	newUser := Model{
+		FirstName:    user.FirstName,
+		LastName:     user.LastName,
+		Username:     user.Username,
+		Email:        user.Email,
+		Role:         user.Role,
+		PasswordHash: passwordHash,
+		PasswordSalt: passwordSalt,
+		CreatedAt:    time.Now(),
+	}
 
-	err = r.db.QueryRow(
-		context.Background(),
-		createUserSql,
-		newUser.FirstName,
-		newUser.LastName,
-		newUser.Username,
-		newUser.Email,
-		newUser.Role,
-		newUser.PasswordHash,
-		newUser.PasswordSalt,
-		time.Now(),
-	).Scan(&newUser.Id, &newUser.CreatedAt)
-
+	rows, err := r.db.NamedQuery(createUserSql, newUser)
 	if err != nil {
 		return nil, err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		if err := rows.Scan(&newUser.Id, &newUser.CreatedAt); err != nil {
+			return nil, err
+		}
 	}
 
 	return &newUser, nil
@@ -75,22 +71,9 @@ func (r *PGRepo) GetById(id uuid.UUID) (*Model, error) {
 	r.logger.Debug("Executing query", zap.String("query", getByIdSql))
 
 	var user Model
-	row := r.db.QueryRow(context.Background(), getByIdSql, id)
-
-	err := row.Scan(
-		&user.Id,
-		&user.FirstName,
-		&user.LastName,
-		&user.Username,
-		&user.Email,
-		&user.Role,
-		&user.PasswordHash,
-		&user.PasswordSalt,
-		&user.CreatedAt,
-	)
-
+	err := r.db.GetContext(context.Background(), &user, getByIdSql, id)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if err == sql.ErrNoRows {
 			return nil, nil
 		}
 		return nil, err
@@ -108,22 +91,9 @@ func (r *PGRepo) GetByUsername(username string) (*Model, error) {
 	r.logger.Debug("Executing query", zap.String("query", getByUsernameSql))
 
 	var user Model
-	row := r.db.QueryRow(context.Background(), getByUsernameSql, username)
-
-	err := row.Scan(
-		&user.Id,
-		&user.FirstName,
-		&user.LastName,
-		&user.Username,
-		&user.Email,
-		&user.Role,
-		&user.PasswordHash,
-		&user.PasswordSalt,
-		&user.CreatedAt,
-	)
-
+	err := r.db.GetContext(context.Background(), &user, getByUsernameSql, username)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if err == sql.ErrNoRows {
 			return nil, nil
 		}
 		return nil, err
@@ -139,6 +109,6 @@ const deleteByIdSql = `
 
 func (r *PGRepo) DeleteById(id uuid.UUID) error {
 	r.logger.Debug("Executing query", zap.String("query", deleteByIdSql))
-	_, err := r.db.Exec(context.Background(), deleteByIdSql, id)
+	_, err := r.db.ExecContext(context.Background(), deleteByIdSql, id)
 	return err
 }

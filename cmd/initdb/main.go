@@ -20,14 +20,14 @@ func main() {
 
 	fmt.Println("Hello, World!")
 
-	pgPool, err := db.InitDb(config.PostgresUrl, os.Getenv("SQL_FILE"), logger)
+	dbConn, err := db.InitDb(config.PostgresUrl, os.Getenv("SQL_FILE"), logger)
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
-	defer pgPool.Close()
+	defer dbConn.Close()
 
-	userRepo := user.NewPGRepo(pgPool, logger)
+	userRepo := user.NewPGRepo(dbConn, logger)
 	_, err = userRepo.Create(&user.CreateModel{
 		FirstName: "Admin",
 		LastName:  "Admin",

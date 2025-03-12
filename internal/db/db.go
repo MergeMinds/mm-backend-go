@@ -4,14 +4,13 @@ import (
 	"context"
 	"os"
 
-	pgxdecimal "github.com/jackc/pgx-shopspring-decimal"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
-func InitDb(dbUrl string, filePath string, logger *zap.Logger) (*pgxpool.Pool, error) {
-	pool, err := CreatePool(dbUrl, logger)
+func InitDb(dbUrl string, filePath string, logger *zap.Logger) (*sqlx.DB, error) {
+	db, err := CreateDb(dbUrl, logger)
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
@@ -22,58 +21,43 @@ func InitDb(dbUrl string, filePath string, logger *zap.Logger) (*pgxpool.Pool, e
 		return nil, err
 	}
 
-	_, err = pool.Exec(context.Background(), string(createTableSql))
+	_, err = db.ExecContext(context.Background(), string(createTableSql))
 	if err != nil {
 		return nil, err
 	}
 
 	logger.Info("Tables created!")
 
-	return pool, err
+	return db, err
 }
 
-func DropDb(dbUrl string, filePath string, logger *zap.Logger) (*pgxpool.Pool, error) {
-	pool, err := CreatePool(dbUrl, logger)
+func DropDb(dbUrl string, filePath string, logger *zap.Logger) (*sqlx.DB, error) {
+	db, err := CreateDb(dbUrl, logger)
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
-
 	dropTableSql, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = pool.Exec(context.Background(), string(dropTableSql))
+	_, err = db.ExecContext(context.Background(), string(dropTableSql))
 	if err != nil {
 		return nil, err
 	}
 
 	logger.Info("Tables removed!")
 
-	return pool, err
+	return db, err
 }
 
-func CreatePool(dbUrl string, logger *zap.Logger) (*pgxpool.Pool, error) {
-	poolConfig, err := pgxpool.ParseConfig(dbUrl)
+func CreateDb(dbUrl string, logger *zap.Logger) (*sqlx.DB, error) {
+	db, err := sqlx.Connect("postgres", dbUrl)
 	if err != nil {
-		logger.Error("Unable to parse connection string")
+		logger.Error("Unable to establish database connection")
 		os.Exit(1)
 	}
 
-	poolConfig.AfterConnect = func(_ context.Context, conn *pgx.Conn) error {
-		pgxdecimal.Register(conn.TypeMap())
-		return nil
-	}
-
-	pool, err := pgxpool.NewWithConfig(
-		context.Background(),
-		poolConfig,
-	)
-	if err != nil {
-		logger.Error("Unable to create connection pool")
-		os.Exit(1)
-	}
-
-	return pool, err
+	return db, err
 }
