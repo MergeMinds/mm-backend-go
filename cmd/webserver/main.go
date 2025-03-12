@@ -24,12 +24,12 @@ func main() {
 
 	logger := applogger.Create(config.LogLevel)
 
-	pgPool, err := db.CreatePool(config.PostgresUrl, logger)
+	dbConn, err := db.CreateDb(config.PostgresUrl, logger)
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
-	defer pgPool.Close()
+	defer dbConn.Close()
 
 	redisOpts, err := redis.ParseURL(config.RedisUrl)
 	if err != nil {
@@ -49,7 +49,7 @@ func main() {
 	cookieConfig.Secure = config.SessionCookieSecure
 	cookieConfig.Domain = config.SessionCookieDomain
 
-	userRepo := user.NewPGRepo(pgPool, logger)
+	userRepo := user.NewPGRepo(dbConn, logger)
 	sessionRepo := session.NewRedisRepo(redisClient, logger)
 
 	auth.SetupRoutes(r, userRepo, sessionRepo, logger, cookieConfig)

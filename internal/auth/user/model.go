@@ -7,15 +7,15 @@ import (
 )
 
 type Model struct {
-	Id           uuid.UUID
-	CreatedAt    time.Time
-	FirstName    string
-	LastName     string
-	Username     string
-	Email        string
-	Role         string
-	PasswordHash []byte
-	PasswordSalt []byte
+	Id           uuid.UUID `db:"id"`
+	CreatedAt    time.Time `db:"created_at"`
+	FirstName    string    `db:"first_name"`
+	LastName     string    `db:"last_name"`
+	Username     string    `db:"username"`
+	Email        string    `db:"email"`
+	Role         string    `db:"role"`
+	PasswordHash []byte    `db:"password_hash"`
+	PasswordSalt []byte    `db:"password_salt"`
 }
 
 type OutModel struct {
