@@ -10,6 +10,7 @@ import (
 
 	"github.com/MergeMinds/mm-backend-go/internal/applogger"
 	"github.com/MergeMinds/mm-backend-go/internal/auth"
+	"github.com/MergeMinds/mm-backend-go/internal/auth/cookie"
 	"github.com/MergeMinds/mm-backend-go/internal/auth/session"
 	"github.com/MergeMinds/mm-backend-go/internal/auth/user"
 	"github.com/MergeMinds/mm-backend-go/internal/config"
@@ -82,7 +83,7 @@ func main() {
 	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
 	r.Use(ginzap.RecoveryWithZap(logger, true))
 
-	cookieConfig := auth.DefaultCookieConfig()
+	cookieConfig := cookie.DefaultCookieConfig()
 	cookieConfig.Secure = config.SessionCookieSecure
 	cookieConfig.Domain = config.SessionCookieDomain
 
