@@ -1,4 +1,4 @@
-package auth
+package cookie
 
 type Seconds = int
 
