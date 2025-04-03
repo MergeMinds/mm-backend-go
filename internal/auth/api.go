@@ -10,25 +10,25 @@ import (
 )
 
 func SetupRoutes(
-	r *gin.Engine,
+	r *gin.RouterGroup,
 	userRepo user.Repo,
 	sessionRepo session.Repo,
 	logger *zap.Logger,
 	cookieConfig *cookie.CookieConfig,
 ) {
 	r.POST("/login", func(ctx *gin.Context) {
-		routes.Api_login(ctx, userRepo, sessionRepo, logger, cookieConfig)
+		routes.Login(ctx, userRepo, sessionRepo, logger, cookieConfig)
 	})
 
 	r.POST("/register", func(ctx *gin.Context) {
-		routes.Api_register(ctx, userRepo, sessionRepo, logger, cookieConfig)
+		routes.Register(ctx, userRepo, sessionRepo, logger, cookieConfig)
 	})
 
 	r.POST("/logout", func(ctx *gin.Context) {
-		routes.Api_logout(ctx, userRepo, sessionRepo, logger, cookieConfig)
+		routes.Logout(ctx, userRepo, sessionRepo, logger, cookieConfig)
 	})
 
 	r.GET("/session", func(ctx *gin.Context) {
-		routes.Api_session(ctx, userRepo, sessionRepo, logger, cookieConfig)
+		routes.Session(ctx, userRepo, sessionRepo, logger, cookieConfig)
 	})
 }

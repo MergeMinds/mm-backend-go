@@ -90,7 +90,8 @@ func main() {
 	userRepo := user.NewPGRepo(dbConn, logger)
 	sessionRepo := session.NewRedisRepo(redisClient, logger)
 
-	auth.SetupRoutes(r, userRepo, sessionRepo, logger, cookieConfig)
+	v1 := r.Group("api/v1")
+	auth.SetupRoutes(v1, userRepo, sessionRepo, logger, cookieConfig)
 
 	server := &http.Server{
 		Handler: r,

@@ -13,12 +13,12 @@ import (
 	"go.uber.org/zap"
 )
 
-type Login struct {
+type LoginModel struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-type Register struct {
+type RegisterModel struct {
 	FirstName string `json:"firstName" binding:"required"`
 	LastName  string `json:"lastName" binding:"required"`
 	Username  string `json:"username" binding:"required"`
@@ -26,11 +26,11 @@ type Register struct {
 	Password  string `json:"password" binding:"required"`
 }
 
-func Api_login(c *gin.Context, userRepo user.Repo,
+func Login(c *gin.Context, userRepo user.Repo,
 	sessionRepo session.Repo,
 	logger *zap.Logger,
 	cookieConfig *cookie.CookieConfig) {
-	var loginJson Login
+	var loginJson LoginModel
 	if err := c.ShouldBindBodyWithJSON(&loginJson); err != nil {
 		c.JSON(http.StatusBadRequest, apierr.InvalidJSON)
 		return
@@ -76,11 +76,11 @@ func Api_login(c *gin.Context, userRepo user.Repo,
 	})
 }
 
-func Api_register(c *gin.Context, userRepo user.Repo,
+func Register(c *gin.Context, userRepo user.Repo,
 	sessionRepo session.Repo,
 	logger *zap.Logger,
 	cookieConfig *cookie.CookieConfig) {
-	var registerJson Register
+	var registerJson RegisterModel
 	if err := c.ShouldBindBodyWithJSON(&registerJson); err != nil {
 		c.JSON(http.StatusBadRequest, apierr.InvalidJSON)
 		return
@@ -105,7 +105,7 @@ func Api_register(c *gin.Context, userRepo user.Repo,
 	c.JSON(http.StatusCreated, mapUserToUserOut(u))
 }
 
-func Api_logout(c *gin.Context, userRepo user.Repo,
+func Logout(c *gin.Context, userRepo user.Repo,
 	sessionRepo session.Repo,
 	logger *zap.Logger,
 	cookieConfig *cookie.CookieConfig) {
@@ -135,7 +135,7 @@ func Api_logout(c *gin.Context, userRepo user.Repo,
 	})
 }
 
-func Api_session(c *gin.Context, userRepo user.Repo,
+func Session(c *gin.Context, userRepo user.Repo,
 	sessionRepo session.Repo,
 	logger *zap.Logger,
 	cookieConfig *cookie.CookieConfig) {
