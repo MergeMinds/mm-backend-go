@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
+	auth "github.com/MergeMinds/mm-backend-go/internal"
 	"github.com/MergeMinds/mm-backend-go/internal/applogger"
-	"github.com/MergeMinds/mm-backend-go/internal/auth"
 	"github.com/MergeMinds/mm-backend-go/internal/auth/cookie"
 	"github.com/MergeMinds/mm-backend-go/internal/auth/session"
 	"github.com/MergeMinds/mm-backend-go/internal/auth/user"
