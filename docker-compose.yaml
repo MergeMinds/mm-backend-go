@@ -1,3 +1,13 @@
+x-common-environment: &common_env
+  POSTGRES_URL: postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}?sslmode=disable
+  REDIS_URL: redis://dragonfly/0
+  SESSION_COOKIE_SECURE: "false"
+  SESSION_COOKIE_DOMAIN: ${SESSION_COOKIE_DOMAIN:-localhost:5173}
+  ALLOW_ORIGIN: ${ALLOW_ORIGIN:-http://localhost:5173}
+  LOG_LEVEL: ${LOG_LEVEL:-debug}
+  ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:-123}
+
 services:
   backend:
     build: .
@@ -5,14 +15,7 @@ services:
     ports:
       - "${PORT:-8080}:8080"
     environment:
-      - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}?sslmode=disable
-      - REDIS_URL=redis://dragonfly/0
-      - SESSION_COOKIE_SECURE=false
-      - SESSION_COOKIE_DOMAIN=${SESSION_COOKIE_DOMAIN:-localhost:5173}
-      - ALLOW_ORIGIN=${ALLOW_ORIGIN:-http://localhost:5173}
-      - LOG_LEVEL=${LOG_LEVEL:-debug}
-      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-123}
+      <<: *common_env
     depends_on:
       - db
       - dragonfly
@@ -23,18 +26,11 @@ services:
     build: .
     command: ["/app/runsql"]
     environment:
-      - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}?sslmode=disable
-      - REDIS_URL=redis://dragonfly/0
-      - SESSION_COOKIE_SECURE=false
-      - SESSION_COOKIE_DOMAIN=${SESSION_COOKIE_DOMAIN:-localhost:5173}
-      - ALLOW_ORIGIN=${ALLOW_ORIGIN:-http://localhost:5173}
-      - LOG_LEVEL=${LOG_LEVEL:-debug}
-      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-123}
-      - SQL_FILE=/app/db/CreateTables.sql
-      - CREATE_ADMIN=true
+      <<: *common_env
+      SQL_FILE: /app/db/CreateTables.sql
+      CREATE_ADMIN: true
     depends_on:
-      - backend
+      - db
     env_file:
       - .env
     volumes:
@@ -46,18 +42,11 @@ services:
     build: .
     command: ["/app/runsql"]
     environment:
-      - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}?sslmode=disable
-      - REDIS_URL=redis://dragonfly/0
-      - SESSION_COOKIE_SECURE=false
-      - SESSION_COOKIE_DOMAIN=${SESSION_COOKIE_DOMAIN:-localhost:5173}
-      - ALLOW_ORIGIN=${ALLOW_ORIGIN:-http://localhost:5173}
-      - LOG_LEVEL=${LOG_LEVEL:-debug}
-      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-123}
-      - SQL_FILE=/app/db/DropTables.sql
-      - CREATE_ADMIN=false
+      <<: *common_env
+      SQL_FILE: /app/db/DropTables.sql
+      CREATE_ADMIN: false
     depends_on:
-      - backend
+      - db
     env_file:
       - .env
     volumes:
