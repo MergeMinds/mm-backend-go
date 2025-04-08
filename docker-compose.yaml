@@ -21,9 +21,7 @@ services:
 
   initdb:
     build: .
-    command: >
-      sh -c "apk add --no-cache postgresql-contrib &&
-           /app/initdb"
+    command: ["/app/runsql"]
     environment:
       - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}?sslmode=disable
       - REDIS_URL=redis://dragonfly/0
@@ -34,6 +32,7 @@ services:
       - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-123}
       - SQL_FILE=/app/db/CreateTables.sql
+      - CREATE_ADMIN=true
     depends_on:
       - backend
     env_file:
@@ -41,7 +40,7 @@ services:
 
   dropdb:
     build: .
-    command: ["/app/dropdb"]
+    command: ["/app/runsql"]
     environment:
       - POSTGRES_URL=postgresql://${DB_USER:-sguhack}@db/${DB_NAME:-sguhack}?sslmode=disable
       - REDIS_URL=redis://dragonfly/0
@@ -52,11 +51,12 @@ services:
       - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-123}
       - SQL_FILE=/app/db/DropTables.sql
+      - CREATE_ADMIN=false
     depends_on:
       - backend
     env_file:
       - .env
-  
+
   db:
     image: postgres:17.1-alpine
     environment:
