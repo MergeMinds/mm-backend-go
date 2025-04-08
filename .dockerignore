@@ -1,0 +1,9 @@
+db
+.env
+.env.example
+.git
+.gitignore
+.pre-commit-config.yaml
+docker-compose.yaml
+Dockerfile
+README.md
