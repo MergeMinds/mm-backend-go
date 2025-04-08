@@ -1,22 +1,179 @@
-basePath: /api/v1
-externalDocs:
-  description: OpenAPI
-  url: https://swagger.io/resources/open-api/
-host: localhost:8080
+definitions:
+  apierr.ApiError:
+    properties:
+      error:
+        type: string
+    type: object
+  routes.LoginModel:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  routes.LoginSuccessResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  routes.RegisterModel:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - firstName
+    - lastName
+    - password
+    - username
+    type: object
+  user.OutModel:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
-  description: This is a sample server celler server.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: Swagger Example API
-  version: "1.0"
-paths: {}
-securityDefinitions:
-  BasicAuth:
-    type: basic
+  contact: {}
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login into account
+      parameters:
+      - description: Login data for some shit
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/routes.LoginModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/routes.LoginSuccessResponse'
+        "400":
+          description: Invalid JsOn
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "401":
+          description: Wrong credentials
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+      summary: Login into account
+      tags:
+      - auth
+  /logout:
+    post:
+      description: Logout from an account
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/routes.LoginSuccessResponse'
+        "401":
+          description: Cookie not exists
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+      summary: Logout from an account
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new account
+      parameters:
+      - description: Register payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/routes.RegisterModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.OutModel'
+        "400":
+          description: Invalid JSON
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "401":
+          description: Wrong credentials
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+      summary: Register a new account
+      tags:
+      - auth
+  /session:
+    get:
+      description: Get active session
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.OutModel'
+        "401":
+          description: User not found
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+      summary: Get active session
+      tags:
+      - auth
 swagger: "2.0"
