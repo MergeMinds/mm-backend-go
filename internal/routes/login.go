@@ -26,6 +26,22 @@ type RegisterModel struct {
 	Password  string `json:"password" binding:"required"`
 }
 
+type LoginSuccessResponse struct {
+	Status string `json:"status"`
+}
+
+// @description Login into account
+// @summary Login into account
+// @tags auth
+// @accept json
+// @produce json
+// @param request body LoginModel true "Login data for some shit"
+// @success 201 {object} LoginSuccessResponse
+// @failure 400 {object} apierr.ApiError "Invalid JsOn"
+// @failure 401 {object} apierr.ApiError "Wrong credentials"
+// @failure 404 {object} apierr.ApiError "User not found"
+// @failure 500 {object} apierr.ApiError "Internal server error"
+// @router /login [POST]
 func Login(c *gin.Context, userRepo user.Repo,
 	sessionRepo session.Repo,
 	logger *zap.Logger,
@@ -76,6 +92,17 @@ func Login(c *gin.Context, userRepo user.Repo,
 	})
 }
 
+// @description Register a new account
+// @summary Register a new account
+// @tags auth
+// @accept json
+// @produce json
+// @param request body RegisterModel true "Register payload"
+// @success 201 {object} user.OutModel
+// @failure 400 {object} apierr.ApiError "Invalid JSON"
+// @failure 401 {object} apierr.ApiError "Wrong credentials"
+// @failure 500 {object} apierr.ApiError "Internal server error"
+// @router /register [POST]
 func Register(c *gin.Context, userRepo user.Repo,
 	sessionRepo session.Repo,
 	logger *zap.Logger,
@@ -105,6 +132,14 @@ func Register(c *gin.Context, userRepo user.Repo,
 	c.JSON(http.StatusCreated, mapUserToUserOut(u))
 }
 
+// @description Logout from an account
+// @summary Logout from an account
+// @tags auth
+// @produce json
+// @success 201 {object} LoginSuccessResponse
+// @failure 401 {object} apierr.ApiError "Cookie not exists"
+// @failure 500 {object} apierr.ApiError "Internal server error"
+// @router /logout [POST]
 func Logout(c *gin.Context, userRepo user.Repo,
 	sessionRepo session.Repo,
 	logger *zap.Logger,
@@ -135,6 +170,15 @@ func Logout(c *gin.Context, userRepo user.Repo,
 	})
 }
 
+// @description Get active session
+// @summary Get active session
+// @tags auth
+// @produce json
+// @success 200 {object} user.OutModel
+// @failure 401 {object} apierr.ApiError "User not found"
+// @failure 404 {object} apierr.ApiError "User not found"
+// @failure 500 {object} apierr.ApiError "Internal server error"
+// @router /session [GET]
 func Session(c *gin.Context, userRepo user.Repo,
 	sessionRepo session.Repo,
 	logger *zap.Logger,
@@ -156,7 +200,7 @@ func Session(c *gin.Context, userRepo user.Repo,
 		return
 	}
 
-	c.JSON(http.StatusCreated, mapUserToUserOut(u))
+	c.JSON(http.StatusOK, mapUserToUserOut(u))
 }
 
 func mapUserToUserOut(u *user.Model) *user.OutModel {
