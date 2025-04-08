@@ -37,6 +37,10 @@ services:
       - backend
     env_file:
       - .env
+    volumes:
+      - type: bind
+        source: ./db
+        target: /app/db
 
   dropdb:
     build: .
@@ -56,6 +60,10 @@ services:
       - backend
     env_file:
       - .env
+    volumes:
+      - type: bind
+        source: ./db
+        target: /app/db
 
   db:
     image: postgres:17.1-alpine
