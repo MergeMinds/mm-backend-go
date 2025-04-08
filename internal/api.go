@@ -1,4 +1,4 @@
-package auth
+package api
 
 import (
 	"github.com/MergeMinds/mm-backend-go/internal/auth/cookie"
@@ -7,8 +7,8 @@ import (
 	"github.com/MergeMinds/mm-backend-go/internal/routes"
 	"github.com/MergeMinds/mm-backend-go/internal/swagger"
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"     // swagger embed files
-	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 )
 
