@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"os"
+	"strings"
 
 	"github.com/MergeMinds/mm-backend-go/internal/applogger"
 	"github.com/MergeMinds/mm-backend-go/internal/auth/user"
@@ -18,29 +18,28 @@ func main() {
 
 	logger := applogger.Create(config.LogLevel)
 
-	fmt.Println("Hello, World!")
-
-	dbConn, err := db.InitDb(config.PostgresUrl, os.Getenv("SQL_FILE"), logger)
+	dbConn, err := db.RunSQL(config.PostgresUrl, os.Getenv("SQL_FILE"), logger)
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
 	defer dbConn.Close()
 
-	userRepo := user.NewPGRepo(dbConn, logger)
-	_, err = userRepo.Create(&user.CreateModel{
-		FirstName: "Admin",
-		LastName:  "Admin",
-		Username:  config.AdminUsername,
-		Role:      "ADMIN",
-		Password:  config.AdminPassword,
-		Email:     config.AdminEmail,
-	})
+	if strings.ToLower(os.Getenv("CREATE_ADMIN")) == "true" {
+		userRepo := user.NewPGRepo(dbConn, logger)
+		_, err = userRepo.Create(&user.CreateModel{
+			FirstName: "Admin",
+			LastName:  "Admin",
+			Username:  config.AdminUsername,
+			Role:      "ADMIN",
+			Password:  config.AdminPassword,
+			Email:     config.AdminEmail,
+		})
+		logger.Info("Admin created!")
+	}
 
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
-
-	logger.Info("Admin created!")
 }
