@@ -6,8 +6,17 @@ import (
 	"github.com/MergeMinds/mm-backend-go/internal/auth/user"
 	"github.com/MergeMinds/mm-backend-go/internal/routes"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 	"go.uber.org/zap"
 )
+
+// Swagger parameters
+// @title           MergeMinds Web-API
+// @version         1.0
+// @host      localhost:8080
+// @BasePath  /api/v1
+// @securityDefinitions.basic  BasicAuth
 
 func SetupRoutes(
 	r *gin.RouterGroup,
@@ -16,6 +25,8 @@ func SetupRoutes(
 	logger *zap.Logger,
 	cookieConfig *cookie.CookieConfig,
 ) {
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	r.POST("/login", func(ctx *gin.Context) {
 		routes.Login(ctx, userRepo, sessionRepo, logger, cookieConfig)
 	})
