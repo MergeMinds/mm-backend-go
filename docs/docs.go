@@ -15,6 +15,202 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/block": {
+            "get": {
+                "description": "Get block data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blocks"
+                ],
+                "summary": "Get block data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Block ID",
+                        "name": "blockId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/routes.BlockModelResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Block not found",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Register a new account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blocks"
+                ],
+                "summary": "Register a new account",
+                "parameters": [
+                    {
+                        "description": "Block payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/routes.CreateBlockType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/routes.BlockModelResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid JSON",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    },
+                    "403": {
+                        "description": "No permission",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Will remove block from course but won't delete it from database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blocks"
+                ],
+                "summary": "Remove block",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Block ID",
+                        "name": "blockId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Block not found",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Change single or multiple parameters of the block",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blocks"
+                ],
+                "summary": "Modify block",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Block ID",
+                        "name": "blockId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Block payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/routes.CreateBlockType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/routes.BlockModelResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Block not found",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Login into account",
@@ -205,6 +401,51 @@ const docTemplate = `{
                 }
             }
         },
+        "routes.BlockModelResponse": {
+            "type": "object",
+            "required": [
+                "blockType",
+                "courseId",
+                "data"
+            ],
+            "properties": {
+                "blockType": {
+                    "type": "string"
+                },
+                "courseId": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/routes.DataType"
+                }
+            }
+        },
+        "routes.CreateBlockType": {
+            "type": "object",
+            "required": [
+                "blockType",
+                "data"
+            ],
+            "properties": {
+                "blockType": {
+                    "type": "string"
+                },
+                "data": {
+                    "$ref": "#/definitions/routes.DataType"
+                }
+            }
+        },
+        "routes.DataType": {
+            "type": "object",
+            "properties": {
+                "format": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
         "routes.LoginModel": {
             "type": "object",
             "required": [
@@ -294,6 +535,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {
