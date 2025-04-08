@@ -9,7 +9,7 @@ import (
 	"time"
 
 	_ "github.com/MergeMinds/mm-backend-go/docs"
-	auth "github.com/MergeMinds/mm-backend-go/internal"
+	api "github.com/MergeMinds/mm-backend-go/internal"
 	"github.com/MergeMinds/mm-backend-go/internal/applogger"
 	"github.com/MergeMinds/mm-backend-go/internal/auth/cookie"
 	"github.com/MergeMinds/mm-backend-go/internal/auth/session"
@@ -92,7 +92,7 @@ func main() {
 	sessionRepo := session.NewRedisRepo(redisClient, logger)
 
 	v1 := r.Group("api/v1")
-	auth.SetupRoutes(v1, userRepo, sessionRepo, logger, cookieConfig)
+	api.SetupRoutes(v1, userRepo, sessionRepo, logger, cookieConfig)
 
 	server := &http.Server{
 		Handler: r,
