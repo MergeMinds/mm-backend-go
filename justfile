@@ -2,6 +2,10 @@
 run-compose:
     docker compose up backend db dragonfly
 
+# Run the application in Docker Compose with Air (for development)
+dev:
+    docker compose up backend-dev db dragonfly
+
 # Initialize the database when running in Docker Compose: creates tables and admin user
 initdb-compose:
     docker compose run --rm initdb
@@ -32,6 +36,7 @@ dropdb-host:
 # Run the application on the host system
 run-host:
     go run cmd/webserver/main.go
+
 
 # Install Git hooks
 precommit-install:
