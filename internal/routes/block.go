@@ -1,6 +1,10 @@
 package routes
 
 import (
+	"net/http"
+	"strconv"
+
+	"github.com/MergeMinds/mm-backend-go/internal/apierr"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -37,8 +41,23 @@ type CreateBlockType struct {
 // @failure 400 {object} apierr.ApiError "Invalid ID"
 // @failure 404 {object} apierr.ApiError "Block not found"
 // @failure 500 {object} apierr.ApiError "Internal server error"
-// @router /block [GET]
-func GetBlock(c *gin.Context, blockId string) {}
+// @router /block/:id [GET]
+func GetBlock(c *gin.Context) {
+	_, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, apierr.New("INVALID_ID"))
+		return
+	}
+
+	c.JSON(http.StatusOK, BlockModelResponse{
+		BlockType: "text",
+		Data: DataType{
+			Format: "markdown",
+			Text:   "Mock text lmao",
+		},
+		CourseId: uuid.New(),
+	})
+}
 
 // @description Register a new account
 // @summary Register a new account
@@ -51,7 +70,18 @@ func GetBlock(c *gin.Context, blockId string) {}
 // @failure 403 {object} apierr.ApiError "No permission"
 // @failure 500 {object} apierr.ApiError "Internal server error"
 // @router /block [POST]
-func CreateBlock(c *gin.Context) {}
+func CreateBlock(c *gin.Context) {
+	var createJson CreateBlockType
+	if err := c.ShouldBindBodyWithJSON(&createJson); err != nil {
+		c.JSON(http.StatusBadRequest, apierr.InvalidJSON)
+		return
+	}
+	c.JSON(http.StatusCreated, BlockModelResponse{
+		BlockType: createJson.BlockType,
+		Data:      createJson.Data,
+		CourseId:  uuid.New(),
+	})
+}
 
 // @description Change single or multiple parameters of the block
 // @summary Modify block
@@ -65,8 +95,26 @@ func CreateBlock(c *gin.Context) {}
 // @failure 404 {object} apierr.ApiError "Parameter not found"
 // @failure 404 {object} apierr.ApiError "Block not found"
 // @failure 500 {object} apierr.ApiError "Internal server error"
-// @router /block [PATCH]
-func PatchBlock(c *gin.Context, blockId string) {}
+// @router /block/:id [PATCH]
+func PatchBlock(c *gin.Context) {
+	_, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, apierr.New("INVALID_ID"))
+		return
+	}
+
+	var req CreateBlockType
+	if err := c.ShouldBindBodyWithJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, apierr.InvalidJSON)
+		return
+	}
+
+	c.JSON(http.StatusOK, BlockModelResponse{
+		BlockType: req.BlockType,
+		Data:      req.Data,
+		CourseId:  uuid.New(),
+	})
+}
 
 // @description Will remove block from course but won't delete it from database
 // @summary Remove block
@@ -77,5 +125,13 @@ func PatchBlock(c *gin.Context, blockId string) {}
 // @failure 400 {object} apierr.ApiError "Invalid ID"
 // @failure 404 {object} apierr.ApiError "Block not found"
 // @failure 500 {object} apierr.ApiError "Internal server error"
-// @router /block [DELETE]
-func DeleteBlock(c *gin.Context, blockId string) {}
+// @router /block/:id [DELETE]
+func DeleteBlock(c *gin.Context) {
+	_, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, apierr.New("INVALID_ID"))
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
