@@ -40,8 +40,7 @@ func SetupRoutes(
 	})
 
 	r.GET("/block/:id", func(ctx *gin.Context) {
-		blockId := ctx.Param("id")
-		routes.GetBlock(ctx, blockId)
+		routes.GetBlock(ctx)
 	})
 
 	r.POST("/block", func(ctx *gin.Context) {
@@ -49,13 +48,11 @@ func SetupRoutes(
 	})
 
 	r.PATCH("/block/:id", func(ctx *gin.Context) {
-		blockId := ctx.Param("id")
-		routes.PatchBlock(ctx, blockId)
+		routes.PatchBlock(ctx)
 	})
 
 	r.DELETE("/block/:id", func(ctx *gin.Context) {
-		blockId := ctx.Param("id")
-		routes.DeleteBlock(ctx, blockId)
+		routes.DeleteBlock(ctx)
 	})
 
 }
