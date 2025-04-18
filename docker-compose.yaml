@@ -13,7 +13,7 @@ services:
     build: .
     command: ["/app/webserver"]
     ports:
-      - "${PORT:-8080}:8080"
+      - "${PORT:-8080}:80"
     environment:
       <<: *common_env
     depends_on:
@@ -27,7 +27,7 @@ services:
       context: .
       dockerfile: dev.Dockerfile
     ports:
-      - "${PORT:-8080}:8080"
+      - "${PORT:-8080}:80"
     environment:
       <<: *common_env
     depends_on:
