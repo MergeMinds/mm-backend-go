@@ -15,7 +15,59 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/block": {
+        "/blocks": {
+            "post": {
+                "description": "Register a new account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blocks"
+                ],
+                "summary": "Register a new account",
+                "parameters": [
+                    {
+                        "description": "Block payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerCreateBlockType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwaggerBlockType"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid JSON",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    },
+                    "403": {
+                        "description": "No permission",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/apierr.ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/blocks/:id": {
             "get": {
                 "description": "Get block data",
                 "produces": [
@@ -38,7 +90,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/routes.BlockModelResponse"
+                            "$ref": "#/definitions/dto.SwaggerBlockType"
                         }
                     },
                     "400": {
@@ -49,56 +101,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Block not found",
-                        "schema": {
-                            "$ref": "#/definitions/apierr.ApiError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/apierr.ApiError"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Register a new account",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "blocks"
-                ],
-                "summary": "Register a new account",
-                "parameters": [
-                    {
-                        "description": "Block payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/routes.CreateBlockType"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/routes.BlockModelResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid JSON",
-                        "schema": {
-                            "$ref": "#/definitions/apierr.ApiError"
-                        }
-                    },
-                    "403": {
-                        "description": "No permission",
                         "schema": {
                             "$ref": "#/definitions/apierr.ApiError"
                         }
@@ -179,7 +181,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/routes.CreateBlockType"
+                            "$ref": "#/definitions/dto.SwaggerCreateBlockType"
                         }
                     }
                 ],
@@ -187,7 +189,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/routes.BlockModelResponse"
+                            "$ref": "#/definitions/dto.SwaggerBlockType"
                         }
                     },
                     "400": {
@@ -401,12 +403,14 @@ const docTemplate = `{
                 }
             }
         },
-        "routes.BlockModelResponse": {
+        "dto.SwaggerBlockType": {
+            "description": "For swagger use only. Use BlockType instead",
             "type": "object",
             "required": [
                 "blockType",
                 "courseId",
-                "data"
+                "data",
+                "id"
             ],
             "properties": {
                 "blockType": {
@@ -416,11 +420,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "data": {
-                    "$ref": "#/definitions/routes.DataType"
+                    "type": "object"
+                },
+                "id": {
+                    "type": "string"
                 }
             }
         },
-        "routes.CreateBlockType": {
+        "dto.SwaggerCreateBlockType": {
+            "description": "For swagger use only. Use CreateBlockType instead",
             "type": "object",
             "required": [
                 "blockType",
@@ -430,33 +438,20 @@ const docTemplate = `{
                 "blockType": {
                     "type": "string"
                 },
-                "data": {
-                    "$ref": "#/definitions/routes.DataType"
-                }
-            }
-        },
-        "routes.DataType": {
-            "type": "object",
-            "properties": {
-                "format": {
-                    "type": "string"
-                },
-                "text": {
-                    "type": "string"
-                }
+                "data": {}
             }
         },
         "routes.LoginModel": {
             "type": "object",
             "required": [
-                "password",
-                "username"
+                "email",
+                "password"
             ],
             "properties": {
-                "password": {
+                "email": {
                     "type": "string"
                 },
-                "username": {
+                "password": {
                     "type": "string"
                 }
             }
@@ -499,6 +494,9 @@ const docTemplate = `{
         "user.OutModel": {
             "type": "object",
             "properties": {
+                "avatarUrl": {
+                    "type": "string"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -512,6 +510,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "lastName": {
+                    "type": "string"
+                },
+                "patronymic": {
                     "type": "string"
                 },
                 "role": {

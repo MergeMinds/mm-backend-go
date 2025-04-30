@@ -1,47 +1,26 @@
 package routes
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/MergeMinds/mm-backend-go/internal/apierr"
+	"github.com/MergeMinds/mm-backend-go/internal/routes/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
-
-type DataType struct {
-	Format string `json:"format" `
-	Text   string `json:"text"`
-}
-
-type BlockModel struct {
-	Id        uuid.UUID `json:"id" binding:"required"`
-	BlockType string    `json:"blockType" binding:"required"`
-	Data      DataType  `json:"data" binding:"required"`
-	CourseId  uuid.UUID `json:"courseId" binding:"required"`
-}
-
-type BlockModelResponse struct {
-	BlockType string    `json:"blockType" binding:"required"`
-	Data      DataType  `json:"data" binding:"required"`
-	CourseId  uuid.UUID `json:"courseId" binding:"required"`
-}
-
-type CreateBlockType struct {
-	BlockType string   `json:"blockType" binding:"required"`
-	Data      DataType `json:"data" binding:"required"`
-}
 
 // @description Get block data
 // @summary Get block data
 // @tags blocks
 // @produce json
 // @param blockId path int true "Block ID"
-// @success 201 {object} BlockModelResponse
+// @success 201 {object} dto.SwaggerBlockType
 // @failure 400 {object} apierr.ApiError "Invalid ID"
 // @failure 404 {object} apierr.ApiError "Block not found"
 // @failure 500 {object} apierr.ApiError "Internal server error"
-// @router /block/:id [GET]
+// @router /blocks/:id [GET]
 func GetBlock(c *gin.Context) {
 	_, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -49,12 +28,13 @@ func GetBlock(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, BlockModelResponse{
+	c.JSON(http.StatusOK, dto.BlockType{
+		Id:        uuid.New(),
 		BlockType: "text",
-		Data: DataType{
-			Format: "markdown",
-			Text:   "Mock text lmao",
-		},
+		Data: json.RawMessage(`{
+			format:"markdown",
+			text:"Mock text lmao"
+	}`),
 		CourseId: uuid.New(),
 	})
 }
@@ -64,19 +44,20 @@ func GetBlock(c *gin.Context) {
 // @tags blocks
 // @accept json
 // @produce json
-// @param request body CreateBlockType true "Block payload"
-// @success 201 {object} BlockModelResponse
+// @param request body dto.SwaggerCreateBlockType true "Block payload"
+// @success 201 {object} dto.SwaggerBlockType
 // @failure 400 {object} apierr.ApiError "Invalid JSON"
 // @failure 403 {object} apierr.ApiError "No permission"
 // @failure 500 {object} apierr.ApiError "Internal server error"
-// @router /block [POST]
+// @router /blocks [POST]
 func CreateBlock(c *gin.Context) {
-	var createJson CreateBlockType
+	var createJson dto.CreateBlockType
 	if err := c.ShouldBindBodyWithJSON(&createJson); err != nil {
 		c.JSON(http.StatusBadRequest, apierr.InvalidJSON)
 		return
 	}
-	c.JSON(http.StatusCreated, BlockModelResponse{
+	c.JSON(http.StatusCreated, dto.BlockType{
+		Id:        uuid.New(),
 		BlockType: createJson.BlockType,
 		Data:      createJson.Data,
 		CourseId:  uuid.New(),
@@ -89,13 +70,13 @@ func CreateBlock(c *gin.Context) {
 // @accept json
 // @produce json
 // @param blockId path int true "Block ID"
-// @param request body CreateBlockType true "Block payload"
-// @success 200 {object} BlockModelResponse
+// @param request body dto.SwaggerCreateBlockType true "Block payload"
+// @success 200 {object} dto.SwaggerBlockType
 // @failure 400 {object} apierr.ApiError "Invalid ID"
 // @failure 404 {object} apierr.ApiError "Parameter not found"
 // @failure 404 {object} apierr.ApiError "Block not found"
 // @failure 500 {object} apierr.ApiError "Internal server error"
-// @router /block/:id [PATCH]
+// @router /blocks/:id [PATCH]
 func PatchBlock(c *gin.Context) {
 	_, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -103,13 +84,14 @@ func PatchBlock(c *gin.Context) {
 		return
 	}
 
-	var req CreateBlockType
+	var req dto.CreateBlockType
 	if err := c.ShouldBindBodyWithJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, apierr.InvalidJSON)
 		return
 	}
 
-	c.JSON(http.StatusOK, BlockModelResponse{
+	c.JSON(http.StatusOK, dto.BlockType{
+		Id:        uuid.New(),
 		BlockType: req.BlockType,
 		Data:      req.Data,
 		CourseId:  uuid.New(),
@@ -125,7 +107,7 @@ func PatchBlock(c *gin.Context) {
 // @failure 400 {object} apierr.ApiError "Invalid ID"
 // @failure 404 {object} apierr.ApiError "Block not found"
 // @failure 500 {object} apierr.ApiError "Internal server error"
-// @router /block/:id [DELETE]
+// @router /blocks/:id [DELETE]
 func DeleteBlock(c *gin.Context) {
 	_, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
